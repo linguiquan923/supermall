@@ -3,30 +3,111 @@
     <NavBar class="home-nav"><div slot="center">购物车</div></NavBar>
     <home-swiper :banners="banners"/>
     <recommend-view :recommends="recommends"/>
+    <feature-view/>
+    <tab-control :titles="['流行','新款','精选']" class="tab-control"/>
+    <ul>
+      <li>1</li>
+      <li>1</li>
+      <li>1</li>
+      <li>1</li>
+      <li>1</li>
+      <li>1</li>
+      <li>1</li>
+      <li>1</li>
+      <li>1</li>
+      <li>1</li><li>1</li>
+      <li>1</li>
+      <li>1</li>
+      <li>1</li>
+      <li>1</li>
+      <li>1</li>
+      <li>1</li>
+      <li>1</li>
+      <li>1</li>
+      <li>1</li><li>1</li>
+      <li>1</li>
+      <li>1</li>
+      <li>1</li>
+      <li>1</li>
+      <li>1</li>
+      <li>1</li>
+      <li>1</li>
+      <li>1</li>
+      <li>1</li><li>1</li>
+      <li>1</li>
+      <li>1</li>
+      <li>1</li>
+      <li>1</li>
+      <li>1</li>
+      <li>1</li>
+      <li>1</li>
+      <li>1</li>
+      <li>1</li><li>1</li>
+      <li>1</li>
+      <li>1</li>
+      <li>1</li>
+      <li>1</li>
+      <li>1</li>
+      <li>1</li>
+      <li>1</li>
+      <li>1</li>
+      <li>1</li><li>1</li>
+      <li>1</li>
+      <li>1</li>
+      <li>1</li>
+      <li>1</li>
+      <li>1</li>
+      <li>1</li>
+      <li>1</li>
+      <li>1</li>
+      <li>1</li><li>1</li>
+      <li>1</li>
+      <li>1</li>
+      <li>1</li>
+      <li>1</li>
+      <li>1</li>
+      <li>1</li>
+      <li>1</li>
+      <li>1</li>
+      <li>1</li>
+    </ul>
   </div>
 </template>
 
 <script>
-
+//公共组件
 import NavBar from "components/common/navbar/NavBar";
-import HomeSwiper from "./childComps/HomeSwiper";
-import RecommendView from "./childComps/RecommendView";
+import TabControl from "components/content/tabControl/TabControl";
 
-import {getHomeMultidata} from "network/home";
+//子组件
+import RecommendView from "./childComps/RecommendView";
+import HomeSwiper from "./childComps/HomeSwiper";
+import FeatureView from "./childComps/FeatureView";
+
+//方法
+import {getHomeMultidata,getHomeGoods} from "network/home";
 
 export default {
     name: "Home",
     components:{
       NavBar,
+      TabControl,
+
       HomeSwiper,
-      RecommendView
+      RecommendView,
+      FeatureView
     },
     data(){
       return {
 
         // results: null
         banners: [],
-        recommends: []
+        recommends: [],
+        goods:{
+          'pop':{page: 0 , list:[]},
+          'news':{page: 0 , list:[]},
+          'sell':{page: 0 , list:[]},
+        }
 
       }
     },
@@ -38,14 +119,34 @@ export default {
         this.banners = res.data.banner.list
         this.recommends = res.data.recommend.list
       })
+      getHomeGoods('pop',1).then((res)=>{
+        console.log(res);
+      })
     },
+      //2、获取商品的所有信息
   }
 </script>
 
 <style scoped>
-  .home-nav{
-    background-color: var(--color-tint);
-    box-shadow: 0 1px 1px 1px rgba(100,100,100,0.1);
-    color: white;
+  #home {
+    padding-top: 22px;
+    /*height: 100px;*/
+    position: relative;
   }
+
+  .home-nav {
+    background-color: var(--color-tint);
+    color: #fff;
+
+    position: fixed;
+    left: 0;
+    right: 0;
+    top: 0;
+    z-index: 9;
+  }
+  .tab-control{
+    position: sticky;
+    top: 44px;
+  }
+
 </style>
