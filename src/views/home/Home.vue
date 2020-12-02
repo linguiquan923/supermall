@@ -4,7 +4,11 @@
     <home-swiper :banners="banners"/>
     <recommend-view :recommends="recommends"/>
     <feature-view/>
-    <tab-control :titles="['流行','新款','精选']" class="tab-control"/>
+    <tab-control :titles="['流行','新款','精选']" 
+                  class="tab-control"
+                  @tabClick="tabClick"
+                  />
+    <goods-list :goods="showGoods"/>
     <ul>
       <li>1</li>
       <li>1</li>
@@ -78,6 +82,8 @@
 //公共组件
 import NavBar from "components/common/navbar/NavBar";
 import TabControl from "components/content/tabControl/TabControl";
+import GoodsList from 'components/content/goods/GoodsList.vue'
+
 
 //子组件
 import RecommendView from "./childComps/RecommendView";
@@ -92,6 +98,7 @@ export default {
     components:{
       NavBar,
       TabControl,
+      GoodsList,
 
       HomeSwiper,
       RecommendView,
@@ -107,23 +114,66 @@ export default {
           'pop':{page: 0 , list:[]},
           'news':{page: 0 , list:[]},
           'sell':{page: 0 , list:[]},
-        }
+        },
+        currentType: 'pop'
 
       }
     },
     created() {
       //1、请求多个数据，加括号调用函数，
-      getHomeMultidata().then((res)=>{
-        // console.log(res);
-        // this.results = res
-        this.banners = res.data.banner.list
-        this.recommends = res.data.recommend.list
-      })
-      getHomeGoods('pop',1).then((res)=>{
-        console.log(res);
-      })
-    },
+      this.getHomeMultidata()
       //2、获取商品的所有信息
+      this.getHomeGoods('pop')
+      this.getHomeGoods('news')
+      this.getHomeGoods('sell')
+    },
+    methods:{
+      /**
+       * 事件监听的方法
+       */
+      tabClick(index){
+        // console.log(index);
+        switch(index){
+          case 0:
+            this.currentType = 'pop';
+            break;
+          case 1:
+            this.currentType = 'new';
+            break;
+          case 2:
+            this.currentType = 'sell'
+            break;
+        }
+      },
+
+
+      /**
+       * 网络请求的方法
+      */
+      getHomeMultidata(){
+        getHomeMultidata().then((res)=>{
+          // console.log(res);
+          // this.results = res
+          this.banners = res.data.banner.list
+          this.recommends = res.data.recommend.list
+        })
+      },
+      getHomeGoods(type){
+        const page = this.goods[type].page + 1
+        getHomeGoods(type,page).then((res)=>{
+        // console.log(res);
+        this.goods[type].list.push(...res.data.list)
+        this.goods[type].page += 1
+      })
+      }
+    },
+
+    computed:{
+      showGoods(){
+        return this.goods[this.currentType].list
+      }
+    }
+      
   }
 </script>
 

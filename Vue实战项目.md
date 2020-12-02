@@ -556,7 +556,62 @@ export default {
 npm install axios --save
 ```
 
-添加一个home.js封装Home的网络请求，专门面对Home的网络请求，home.js是面对request的。Home->home->request
+#### 添加一个home.js封装Home的网络请求，专门面对Home的网络请求，home.js是面对request的。Home->home->request
+
+#### 1、home.js
+
+```js
+import {request} from "./request";
+
+export function getHomeMultidata() {
+  return request({
+    url: '/home/multidata'
+  })
+}
+
+export function getHomeGoods(type,page) {
+  return request({
+    url: '/home/data',
+    params:{
+      type,
+      page
+    }
+  })
+}
+
+```
+
+#### 2、request.js封装好的网络请求
+
+```js
+import axios from 'axios'
+
+export function request(config) {
+     //1.创建axios的实例
+      const instance = axios.create({
+        baseURL: 'http://123.207.32.32:8000',
+        timeout: 5000
+      })
+      //2、axios拦截器的使用
+      //2.1请求拦截
+      instance.interceptors.request.use((config) => {
+        return config
+      },(err) => {
+        // console.log(err);
+      })
+      //2.1响应拦截
+      instance.interceptors.response.use((res)=>{
+        return res.data
+      },(err)=>{
+        console.log(err);
+      })
+      //3.发送真正的网络请求
+      return instance(config)
+}
+
+```
+
+
 
 在Home.vue调用网络请求获取数据
 
@@ -882,4 +937,280 @@ goods:{
           'sell':{page: 0 , list:[]},
         }
 ```
+
+# ##################2020.12.01#####################
+
+
+
+### 13、我们开发的时候created里面只放一些逻辑流程，methods里面放具体操作
+
+```vue
+created() {
+      //1、请求多个数据，加括号调用函数，
+      this.getHomeMultidata()
+      //2、获取商品的所有信息
+      this.getHomeGoods()
+    },
+    methods:{
+      getHomeMultidata(){
+        getHomeMultidata().then((res)=>{
+          // console.log(res);
+          // this.results = res
+          this.banners = res.data.banner.list
+          this.recommends = res.data.recommend.list
+        })
+      },
+      getHomeGoods(type){
+        getHomeGoods(type,1).then((res)=>{
+        console.log(res);
+      })
+      }
+    }
+```
+
+### 14、利用解析的方法把网络请求数据数组里面的数据一一添加到data里面的数组
+
+```vue
+getHomeGoods(type){
+        const page = this.goods[type].page + 1
+        getHomeGoods(type,page).then((res)=>{
+        // console.log(res);
+        this.goods[type].list.push(...res.data.list)
+      })
+      }
+```
+
+
+
+### *、从这里开始拿不到接口数据，只展示逻辑代码
+
+### 15、首页开发-首页商品的展示
+
+#### 1、首先我们要创建一个GoodsList的组件，这个组件是关于首页商品展示的部分
+
+在里面接收从Home传来的数据，利用一个数组去接收，使用for循环去遍历每一个对象，把遍历出来的对象放在GoodsListItem里面去展示数据
+
+```vue
+<!-- <goods-list :goods="goods['pop'].list"/> --> //Home传入到GoodList获取pop的数据
+```
+
+##### GoodsList
+
+```vue
+<template>
+  <div class="goods">
+      <h2>{{goods}}</h2>
+      <!-- <goods-list-item v-for="item in goods" :goods-item="item"></goods-list-item> -->
+  </div>
+</template>
+
+<script>
+import GoodsListItem from './GoodsListItem.vue'
+
+export default {
+    name: "GoodsList",
+    components:{
+        GoodsListItem
+    },
+    props:{
+        goods:{
+            type: Array,
+            default(){
+                return []
+            }
+        }
+    }
+}
+</script>
+
+<style>
+</style>
+```
+
+##### GoodsListItem
+
+使用goodsItem去接收数据
+
+```vue
+<template>
+  <div>我是goodsListItem</div>
+</template>
+
+<script>
+export default {
+    name: 'GoodListItem',
+    props:{
+        goodsItem:{
+            type: Object,
+            default(){
+                return{}
+            }
+        }
+    }
+}
+</script>
+
+<style>
+
+</style>
+```
+
+实现的效果
+
+![image-20201202113944685](C:\Users\Administrator\AppData\Roaming\Typora\typora-user-images\image-20201202113944685.png)
+
+### 16、tabControl点击切换商品
+
+#### 1、点击按钮，子组件传数据到父组件，Home组件获取所点击的信息，根据返回的数据决定要传递给子组件什么数据渲染
+
+tabControl.vue
+
+在 这里实现传递下标出去，然后告诉Home自己点击的是哪一个主题，传出tabClick的事件产生
+
+```vue
+methods:{
+      itemClick(index){
+        // console.log(index);
+        this.currentIndex = index
+        this.$emit('tabClick',index)
+      }
+    }
+```
+
+在Home监听传出的tabClick事件，在methods中实现方法
+
+```vue
+ <tab-control :titles="['流行','新款','精选']" 
+                  class="tab-control"
+                  @tabClick="tabClick"
+                  />
+```
+
+在method中，现在data定义一个变量currentType，因为我们的传入值是不是固定的，通过switch的语句去决定要传入的值是什么。
+
+```
+<goods-list :goods="goods[currentType].list"/>
+```
+
+```vue
+methods:{
+      /**
+       * 事件监听的方法
+       */
+      tabClick(index){
+        // console.log(index);
+        switch(index){
+          case 0:
+            this.currentType = 'pop';
+            break;
+          case 1:
+            this.currentType = 'new';
+            break;
+          case 2:
+            this.currentType = 'sell'
+            break;
+        }
+      },
+```
+
+用计算属性去代替
+
+```vue
+computed:{
+      showGoods(){
+        return this.goods[this.currentType].list
+      }
+    }
+```
+
+### 17、Better-Scroll的安装和使用
+
+解决滑动卡顿的问题
+
+#### 1、安装框架
+
+```java
+npm install better-scroll --save
+```
+
+#### 2、使用import引入
+
+#### 3、使用
+
+```vue
+data(){
+        return{
+            scroll: null
+        }
+    },
+    mounted() {
+        console.log(document.querySelector('.wrapper'))
+        this.scroll = new BScroll(document.querySelector('.wrapper'),{
+        })
+    },
+```
+
+#### 4、注意要实现设定好wrapper的高度
+
+![image-20201202172136334](C:\Users\Administrator\AppData\Roaming\Typora\typora-user-images\image-20201202172136334.png)
+
+#### 5、Better-Scroll的基本使用
+
+##### 1、检测滚动probeType
+
+```vue
+mounted() {
+        console.log(document.querySelector('.wrapper'))
+        //默认情况下不侦测，probe侦测的意思
+        //0,1都是不侦测
+        //2：手指滑动的时候侦测
+        //3: 只要滑动都侦测
+        this.scroll = new BScroll(document.querySelector('.wrapper'),{
+            probeType: 3
+        })
+        this.scroll.on('scroll',(position)=>{
+            console.log(position)
+        })
+    },
+```
+
+![image-20201202173726717](C:\Users\Administrator\AppData\Roaming\Typora\typora-user-images\image-20201202173726717.png)
+
+##### 2、click
+
+项目补充
+
+##### 3、pullUpLoad上拉加载更多
+
+要先设置pullUpLoad: true，
+
+监听pullingUp事件，上拉一次之后是不可以再次使用了，得使用**this.scroll.finishPullUp()**告诉组件已经上拉完毕，可以再次请求上拉
+
+```vue
+mounted() {
+        console.log(document.querySelector('.wrapper'))
+        //默认情况下不侦测，probe侦测的意思
+        //0,1都是不侦测
+        //2：手指滑动的时候侦测
+        //3: 只要滑动都侦测
+        this.scroll = new BScroll(document.querySelector('.wrapper'),{
+            probeType: 3,
+            pullUpLoad: true
+        })
+        this.scroll.on('scroll',(position)=>{
+            // console.log(position)
+        })
+        this.scroll.on('pullingUp', ()=> {
+            console.log('上拉加载中')
+            //发送网络请求，请求更多数据
+
+            //等待数据请求完成，而且将更新的数据展示出来之后
+            setTimeout(() => {
+                this.scroll.finishPullUp()
+            }, 2000);
+        })
+    },
+```
+
+
 
