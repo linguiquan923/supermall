@@ -1,8 +1,8 @@
 <template>
   <div class="recommend">
     <div v-for="item in recommends" class="recommend-item">
-      <a :href="item.link">
-        <img :src="item.image"/>
+      <!-- <a :href="item.link"> -->
+        <img :src="item.image" @click="imageClick"/>
         <div>{{item.title}}</div>
       </a>
     </div>
@@ -18,6 +18,17 @@
         default(){
           return[]
         }
+      }
+    },
+    methods:{
+      imageClick(){
+        // console.log('我是recommend的点击事件')
+        this.$router.push({
+          path:'/detail',
+          query:{
+            iid:111
+          }
+        })
       }
     }
   }

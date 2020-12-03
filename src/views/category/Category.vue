@@ -1,6 +1,7 @@
 <template> 
 <div class="wrapper" ref="aaa">
-      <ul class="content">
+    
+        <ul class="content">
           <li>商品</li>
           <li>商品</li>
           <li>商品</li>
@@ -159,16 +160,20 @@
           <li>商品</li>
           
       </ul>
- 
 </div>
 </template>
 
 <script>
 import BScroll, { PullUpLoad } from 'better-scroll'
+import Scroll from 'components/common/scroll/Scroll'
 
 export default {
 
     name: 'category',
+    components:{
+        Scroll
+        
+    },
     data(){
         return{
             scroll: null
@@ -200,9 +205,14 @@ export default {
 }
 </script>
 
-<style>
+<style scoped>
     .wrapper{
         height: 200px;
+        background-color: blanchedalmond;
+        overflow: hidden;
+    }
+    .wrapper1{
+        height: 300px;
         background-color: blanchedalmond;
         overflow: hidden;
     }

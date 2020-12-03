@@ -1,5 +1,7 @@
 <template>
-  <div>我是goodsListItem</div>
+  <div>我是goodsListItem
+      <img src="" @click="itemClick"/>
+  </div>
 </template>
 
 <script>
@@ -12,10 +14,15 @@ export default {
                 return{}
             }
         }
+    },
+    methods:{
+        itemClick(){
+            console.log('---')
+        }
     }
 }
 </script>
 
-<style>
+<style scoped>
 
 </style>
