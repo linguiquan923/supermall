@@ -11,11 +11,12 @@ export default {
 }
 </script>
 
-<style>
+<style scoped>
     .back-top{
         position: fixed;
         right: 8px;
         bottom: 55px;
+        z-index: 9;
 
     }
     .back-top img{

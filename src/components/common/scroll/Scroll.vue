@@ -23,7 +23,6 @@ export default {
     data(){
         return{
             scroll: null,
-            scrollY: 0
         }
     },
     methods:{
@@ -39,8 +38,9 @@ export default {
         },
         //返回y
         getScrollY(){
-            return this.scrollY ? this.scroll.y : 0 
-        }
+            return this.scroll ? this.scroll.y : 0 
+        },
+        
         
     },
     mounted(){

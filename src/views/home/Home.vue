@@ -93,7 +93,6 @@
     </ul>
     </scroll>
 
-
     <back-top @click.native = "backClick" v-show="isShowBackTop"/>
     </div>
   </div>
@@ -106,6 +105,8 @@ import TabControl from "components/content/tabControl/TabControl";
 import GoodsList from 'components/content/goods/GoodsList.vue'
 import Scroll from 'components/common/scroll/Scroll.vue';
 import BackTop from 'components/content/backTop/BackTop.vue';
+import {itemListenerMixin} from 'common/mixin'
+
 
 //子组件
 import RecommendView from "./childComps/RecommendView";
@@ -147,14 +148,14 @@ export default {
 
       }
     },
-    
+    mixins:[itemListenerMixin],
     methods:{
       /**
        * 事件监听的方法
        */
       //监听点击的是哪个页面的数据
       tabClick(index){
-        console.log('the index = '+index);
+        // console.log('the index = '+index);
         switch(index){
           case 0:
             this.currentType = 'pop';
@@ -246,7 +247,7 @@ export default {
     },
     //钩子函数
     mounted(){
-      
+      console.log("我是Home");
     },
     //进入
     activated(){
@@ -256,8 +257,8 @@ export default {
     },
     //离开
     deactivated(){
-        // console.log('离开');
         this.saveY = this.$refs.scroll.getScrollY()
+        // console.log(this.saveY)
 
     }
       
@@ -291,9 +292,6 @@ export default {
     background-color: white;
   }
   .content{
-    /* height: 400px; */
-    /* height: calc(100% - 93px); */
-    /* overflow: hidden; */
     position: absolute;
     top: 22px;
     bottom: 49px;

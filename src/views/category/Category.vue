@@ -160,19 +160,22 @@
           <li>商品</li>
           
       </ul>
+      <back-top></back-top>
 </div>
 </template>
 
 <script>
 import BScroll, { PullUpLoad } from 'better-scroll'
 import Scroll from 'components/common/scroll/Scroll'
+//引入backTop
+import BackTop from 'components/content/backTop/BackTop'
 
 export default {
 
     name: 'category',
     components:{
-        Scroll
-        
+        Scroll,
+        BackTop
     },
     data(){
         return{
